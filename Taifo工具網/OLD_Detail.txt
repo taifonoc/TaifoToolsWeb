@@ -1,0 +1,34 @@
+
+
+en
+
+config t
+
+gp
+
+
+
+
+gp 11/3
+
+
+ gpon-olt 11/3
+  olt us-flow-mapping per-gem 
+  discover-serial-number start 10
+  onu add 1 DSNW8dba7236 auto-learning
+  onu description 1 shiyu-poi 
+  onu add 3 DSNW4eeef640 auto-learning
+  onu description 3 LiTV_Look 
+  onu-profile 1 mm
+  onu-profile 3 shiyu_FTTH
+  onu auto-upgrade enable
+  onu auto-upgrade version-match all enable
+  onu static-ip 1 ip-host 1 10.255.42.1/22 gw 10.255.40.254 
+  onu static-ip 3 ip-host 1 10.255.42.3/22 gw 10.255.40.254 
+  onu extended-vlan 1 400-1 untagged-frame 1 treat inner vid 253 cos 0
+  onu extended-vlan 3 11 untagged-frame 1 treat inner vid 21 cos 6
+  onu extended-vlan 3 2401-303 untagged-frame 1 treat inner vid 2352 cos 0
+  onu port-config 3 uni eth 2 speed 100 duplex full 
+  onu pppoe 3 host 2 user-account shiyu_1000 shiyu_1000 
+ !
+

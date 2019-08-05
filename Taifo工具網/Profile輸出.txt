@@ -1,0 +1,127 @@
+====================OLT部分====================
+
+dba-profile m100_10% create
+    mode sr 
+    sla maximum 112640
+    apply
+ !
+
+
+extended-vlan-tagging-operation 602-1 create
+    downstream-mode enable
+    untagged-frame 1 
+        treat outer vid 602 cos 0 tpid 0x8100 
+        treat inner vid 1 cos 0 tpid 0x8100 
+    apply 
+!
+
+
+traffic-profile S602_0n4b_100 create
+ mgmt-mode uni eth 1 omci
+ mgmt-mode uni eth 2 omci
+ mgmt-mode uni eth 3 omci
+ mgmt-mode uni eth 4 omci
+  tcont 1 
+   gemport 1/1 
+   dba-profile m100_10%
+  tcont 2 
+   gemport 2/1 
+   dba-profile GVm512k
+  mapper 1 
+   gemport count 1 
+   gemport 1 rate-limit upstream 112640 112640
+   gemport 1 rate-limit downstream 112640 112640
+  mapper 2 
+   gemport count 1 
+  bridge 1 
+   ani mapper 1 
+   uni eth 1 
+    extended-vlan-tagging-operation 602-1 
+   uni eth 2 
+    extended-vlan-tagging-operation 602-1 
+   uni eth 3 
+    extended-vlan-tagging-operation 602-1  
+   uni eth 4 
+    extended-vlan-tagging-operation 602-1 
+  bridge 2 
+   ani mapper 2 
+   link ip-host-config 1
+  ip-host-config 1
+   ip address static
+   extended-vlan-tagging-operation 11 
+  ip-host-config 2
+   ip address static
+  apply
+ !
+
+
+
+ onu-profile S602_0n4b_100 create
+  traffic-profile S602_0n4b_100
+  loop-detect enable
+  loop-detect block
+  apply
+ !
+
+
+
+onu add 2 DSNW4eeed470 auto-learning
+onu description 2 MS00003124
+onu static-ip 2 ip-host 1 10.255.42.2/22 gw 10.255.40.254
+onu-profile 2 S602_0n4b_100
+onu extended-vlan 2 602-1 untagged-frame 1 treat inner vid 777 cos 0
+onu extended-vlan 2 11 untagged-frame 1 treat inner vid 21 cos 0
+
+
+vlan add 602 11/3 tagged 
+vlan add 602 t/1 tagged
+
+
+====================10K部分====================
+
+ethernet-service svlan 602
+
+
+
+====================7750或7450部分====================
+
+內湖7750-01：
+vpls 602777 customer 1 create
+
+description "MV3124-602777"
+service-mtu 9194
+stp
+    no shutdown
+exit
+service-name "MV3124-602777"
+sap lag-114:602.777 create
+exit
+sap lag-110:602.777 create
+exit
+spoke-sdp 10801:602777 create
+      no shutdown
+  exit
+no shutdown
+
+萬華7750-01：
+vpls 602777 customer 1 create
+
+description "MV3124-602777"
+service-mtu 9194
+stp
+    no shutdown
+exit
+service-name MV3124-602777
+sap lag-114:602.777 create
+exit
+sap lag-110:602.777 create
+exit
+spoke-sdp 11401:602777 create
+      no shutdown
+  exit
+no shutdown
+
+
+
+
+
