@@ -414,7 +414,8 @@ ethernet-service svlan {Svlan}
 
 
 
-            public static string ALU7750()
+
+        public static string ALU7750()
             {
                 string alu7750 = "";
 
@@ -670,7 +671,27 @@ exit
             }
 
 
+        public static string ALU6860()
+        {
+            string alu6860 = "";
+            if (Svlan=="610")
+            {
+               alu6860 = $@"ethernet-service sap 6000 {Cvlan}";
+
+            }
+            else if (Svlan=="602")
+            {
+                
+
+                alu6860 = $@"ip interface ""{Cvlan}"" address (ip) mask (mask) valn {Cvlan}
+ip static-route (lan-ip) gateway (GW)";
+                
+            }
+            return alu6860;
+
         }
+
+    }
     }
 
 
